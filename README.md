@@ -16,13 +16,13 @@ export OKTETO_ADMIN_TOKEN=<<your-token>>
 export OKTETO_URL=<<your-okteto-url>>
 ```
 
-- (Optional) Set the threshold since last update of an application to the OKTETO_THRESHOLD local variable. If an application's has been updated before the threshold, it will be re-deployed. If the application is has been updated more recently than the threshold, it won't be re-deployed. Default is "24h".
+- (Optional) Set the threshold since last update of an application to the OKTETO_THRESHOLD local variable. If an application's has been updated before the threshold, it will be re-deployed. If the application is has been updated more recently than the threshold, it won't be re-deployed. **Default is "24h"**.
 
 ```bash
 export OKTETO_THRESHOLD=<<your-okteto-threshold>>
 ```
 
-- (Optional) Set whether the command is a dry run or not to the DRY_RUN local variable. Default is "false"
+- (Optional) Set whether the command is a dry run or not to the DRY_RUN local variable. **Default is "false"**.
 
 ```bash
 export DRY_RUN=<<dry-run mode, true or false>>
