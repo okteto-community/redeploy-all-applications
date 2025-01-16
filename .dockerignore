@@ -2,4 +2,4 @@
 *
 
 # Allow only deployer directory
-!/deployer
+!/app
