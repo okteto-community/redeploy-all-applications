@@ -22,6 +22,12 @@ export OKTETO_URL=<<your-okteto-url>>
 export OKTETO_THRESHOLD=<<your-okteto-threshold>>
 ```
 
+- (Optional) Ignore sleeping namespaces
+
+```bash
+export IGNORE_SLEEPING_NAMESPACES=<<true or false>> **Default is "false"**
+```
+
 - (Optional) Set whether the command is a dry run or not to the DRY_RUN local variable. **Default is "false"**.
 
 ```bash

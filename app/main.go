@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/okteto-community/redeploy-all-applications/app/api"
+	"github.com/okteto-community/redeploy-all-applications/app/model"
 )
 
 const redeployAppCommandTemplate = "okteto pipeline deploy -n \"%s\" --name \"%s\" --repository \"%s\" --branch \"%s\" --reuse-params --wait=false"
@@ -18,10 +19,7 @@ func main() {
 	oktetoURL := os.Getenv("OKTETO_URL")
 	oktetoThreshold := os.Getenv("OKTETO_THRESHOLD")
 	dryRun := os.Getenv("DRY_RUN") == "true"
-
-	if oktetoThreshold == "" {
-		oktetoThreshold = "24h"
-	}
+	ignoreSleeping := os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "true"
 
 	logLevel := &slog.LevelVar{} // INFO
 	opts := &slog.HandlerOptions{
@@ -44,6 +42,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	if oktetoThreshold == "" {
+		oktetoThreshold = "24h"
+	}
+
 	threshold, err := time.ParseDuration(oktetoThreshold)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Invalid OKTETO_THRESHOLD %s", err))
@@ -60,6 +62,12 @@ func main() {
 	updateThreshold := time.Now().Add(-threshold)
 	for _, ns := range nsList {
 		logger.Info(fmt.Sprintf("Processing namespace '%s'", ns.Name))
+
+		if ns.Status == model.Sleeping && ignoreSleeping {
+			logger.Error(fmt.Sprintf("Skipping namespace '%s' since its sleeping", ns.Name))
+			logger.Info("-----------------------------------------------")
+			continue
+		}
 
 		applications, err := api.GetApplicationsWithinNamespace(u.Host, token, ns.Name, logger)
 		if err != nil {

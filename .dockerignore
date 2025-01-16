@@ -1,5 +1,5 @@
 # Ignore everything
 *
 
-# Allow only deployer directory
-!/deployer
+# Allow only the app directory
+!/app
