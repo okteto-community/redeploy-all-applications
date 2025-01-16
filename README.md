@@ -22,10 +22,10 @@ export OKTETO_URL=<<your-okteto-url>>
 export OKTETO_THRESHOLD=<<your-okteto-threshold>>
 ```
 
-- (Optional) Ignore sleeping namespaces
+- (Optional) Ignore sleeping namespaces **Default is "false"**.
 
 ```bash
-export IGNORE_SLEEPING_NAMESPACES=<<true or false>> **Default is "false"**
+export IGNORE_SLEEPING_NAMESPACES=<<true or false>>
 ```
 
 - (Optional) Set whether the command is a dry run or not to the DRY_RUN local variable. **Default is "false"**.
