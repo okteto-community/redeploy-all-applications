@@ -12,7 +12,8 @@ import (
 	"github.com/okteto-community/redeploy-all-applications/app/model"
 )
 
-const redeployAppCommandTemplate = "okteto pipeline deploy -n \"%s\" --name \"%s\" --repository \"%s\" --branch \"%s\" --reuse-params --wait=false"
+const redeployAppCommandTemplate = "okteto pipeline deploy -n \"%s\" --name \"%s\" --repository \"%s\" --branch \"%s\" --reuse-params --wait=%t"
+const sleepNamespaceCommandTemplate = "okteto namespace sleep \"%s\""
 
 func main() {
 	token := os.Getenv("OKTETO_TOKEN")
@@ -20,6 +21,8 @@ func main() {
 	oktetoThreshold := os.Getenv("OKTETO_THRESHOLD")
 	dryRun := os.Getenv("DRY_RUN") == "true"
 	ignoreSleeping := os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "true"
+	restoreOriginalStatus := os.Getenv("RESTORE_ORIGINAL_NAMESPACE_STATUS") == "true"
+	waitForDeploymentToFinish := os.Getenv("WAIT_FOR_DEPLOYMENT") == "true"
 
 	logLevel := &slog.LevelVar{} // INFO
 	opts := &slog.HandlerOptions{
@@ -89,9 +92,18 @@ func main() {
 
 			logger.Info(fmt.Sprintf("Redeploying application '%s' within namespace '%s'", app.Name, ns.Name))
 
-			out, err := redeployApp(ns.Name, app.Name, app.Repository, app.Branch, dryRun)
+			out, err := redeployApp(ns.Name, app.Name, app.Repository, app.Branch, waitForDeploymentToFinish, dryRun)
 			if err != nil {
 				logger.Error(fmt.Sprintf("There was an error redeploying the application '%s' within namespace '%s': %s", app.Name, ns.Name, err))
+			} else {
+				logger.Info(out)
+			}
+		}
+
+		if restoreOriginalStatus && ns.Status == model.Sleeping {
+			out, err := sleepNamespace(ns.Name, dryRun)
+			if err != nil {
+				logger.Error(fmt.Sprintf("There was an error sleeping namespace '%s': %s", ns.Name, err))
 			} else {
 				logger.Info(out)
 			}
@@ -101,8 +113,25 @@ func main() {
 }
 
 // redeployApp executes the Okteto CLI command to redeploy an application
-func redeployApp(ns, appName, repo, branch string, dryRun bool) (string, error) {
-	cmdStr := fmt.Sprintf(redeployAppCommandTemplate, ns, appName, repo, branch)
+func redeployApp(ns, appName, repo, branch string, wait, dryRun bool) (string, error) {
+	cmdStr := fmt.Sprintf(redeployAppCommandTemplate, ns, appName, repo, branch, wait)
+	cmd := exec.Command("bash", "-c", cmdStr)
+
+	if !dryRun {
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return "", err
+		}
+
+		return string(out), nil
+	}
+
+	return fmt.Sprintf("[DRY MODE] %s", cmdStr), nil
+}
+
+// sleepNamespace executes the Okteto CLI command to sleep a namespace
+func sleepNamespace(ns string, dryRun bool) (string, error) {
+	cmdStr := fmt.Sprintf(sleepNamespaceCommandTemplate, ns)
 	cmd := exec.Command("bash", "-c", cmdStr)
 
 	if !dryRun {
