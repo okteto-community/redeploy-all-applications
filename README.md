@@ -28,6 +28,18 @@ export OKTETO_THRESHOLD=<<your-okteto-threshold>>
 export IGNORE_SLEEPING_NAMESPACES=<<true or false>>
 ```
 
+- (Optional) Restore the status of the namespace after redeployment **Default is "false"**.
+
+```bash
+export RESTORE_ORIGINAL_NAMESPACE_STATUS=<<true or false>>
+```
+
+- (Optional) Wait for the deployment to be completed before moving on to the next **Default is "false"**.
+
+```bash
+export WAIT_FOR_DEPLOYMENT=<<true or false>>
+```
+
 - (Optional) Set whether the command is a dry run or not to the DRY_RUN local variable. **Default is "false"**.
 
 ```bash
