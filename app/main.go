@@ -20,7 +20,7 @@ func main() {
 	oktetoURL := os.Getenv("OKTETO_URL")
 	oktetoThreshold := os.Getenv("OKTETO_THRESHOLD")
 	dryRun := os.Getenv("DRY_RUN") == "true"
-	ignoreSleeping := os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "true"
+	ignoreSleeping := os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "" || os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "true"
 	restoreOriginalStatus := os.Getenv("RESTORE_ORIGINAL_NAMESPACE_STATUS") == "true"
 	waitForDeploymentToFinish := os.Getenv("WAIT_FOR_DEPLOYMENT") == "true"
 
@@ -67,7 +67,7 @@ func main() {
 		logger.Info(fmt.Sprintf("Processing namespace '%s'", ns.Name))
 
 		if ns.Status == model.Sleeping && ignoreSleeping {
-			logger.Error(fmt.Sprintf("Skipping namespace '%s' since its sleeping", ns.Name))
+			logger.Info(fmt.Sprintf("Skipping namespace '%s' since its sleeping", ns.Name))
 			logger.Info("-----------------------------------------------")
 			continue
 		}
