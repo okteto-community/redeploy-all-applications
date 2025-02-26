@@ -88,7 +88,6 @@ func main() {
 				continue
 			}
 
-			logger.Info(fmt.Sprintf("application '%s' lastupdate %s", app.Name, app.LastUpdated))
 			if app.LastUpdated.After(updateThreshold) {
 				logger.Info(fmt.Sprintf("Skipping application '%s' within namespace '%s' as it was updated recently", app.Name, ns.Name))
 				continue
