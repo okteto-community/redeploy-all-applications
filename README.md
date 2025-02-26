@@ -52,3 +52,7 @@ cd ./app
 go build main.go
 ./main
 ```
+
+# Example running with Okteto CLI
+
+```okteto deploy --var DRY_RUN=true --var IGNORE_SLEEPING_NAMESPACES=true```
