@@ -2,18 +2,18 @@
 
 > This is an experiment and Okteto does not officially support it.
 
-- Create an [Okteto Admin Token](https://www.okteto.com/docs/admin/dashboard/#admin-access-tokens)
+- Create an [Okteto Admin Token](https://www.okteto.com/docs/admin/dashboard/#admin-access-tokens) (Not needed if running in Okteto instance. It will use your user TOKEN and it has to be admin)
 
 - Export the token to a local variable:
 
 ```bash
-export OKTETO_ADMIN_TOKEN=<<your-token>>
+export OKTETO_TOKEN=<<your-token>>
 ```
 
-- Export the URL of your Okteto instance to a local variable:
+- Export the URL of your Okteto instance to a local variable: (Not needed if running in Okteto instance. It will use your user CONTEXT)
 
 ```bash
-export OKTETO_URL=<<your-okteto-url>>
+export OKTETO_CONTEXT=<<your-okteto-url>>
 ```
 
 - (Optional) Set the threshold since last update of an application to the OKTETO_THRESHOLD local variable. If an application's has been updated before the threshold, it will be re-deployed. If the application is has been updated more recently than the threshold, it won't be re-deployed. **Default is "24h"**.

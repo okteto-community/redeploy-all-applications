@@ -1,0 +1,10 @@
+build: 
+  app: 
+    context: app
+    dockerfile: Dockerfile
+
+deploy: 
+  - kubectl delete job redeploy-all-apps --ignore-not-found --wait
+  - envsubst < app/k8s.yaml | kubectl apply -f -
+
+

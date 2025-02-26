@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redeploy-all-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: redeploy-all-apps
+          image: okteto.dev/redeploy-all-applications-app:okteto
+          env:
+            - name: OKTETO_TOKEN
+              value: "${OKTETO_TOKEN}"
+            - name: OKTETO_CONTEXT
+              value: "${OKTETO_CONTEXT}"
+            - name: OKTETO_THRESHOLD
+              value: "${OKTETO_THRESHOLD}"
+            - name: DRY_RUN
+              value: "${DRY_RUN}"
+            - name: IGNORE_SLEEPING_NAMESPACES
+              value: "${IGNORE_SLEEPING_NAMESPACES}"
+            - name: RESTORE_ORIGINAL_NAMESPACE_STATUS
+              value: "${RESTORE_ORIGINAL_NAMESPACE_STATUS}"
+            - name: WAIT_FOR_DEPLOYMENT
+              value: "${WAIT_FOR_DEPLOYMENT}"
+      restartPolicy: Never
