@@ -17,7 +17,7 @@ const sleepNamespaceCommandTemplate = "okteto namespace sleep \"%s\""
 
 func main() {
 	token := os.Getenv("OKTETO_TOKEN")
-	oktetoURL := os.Getenv("OKTETO_URL")
+	oktetoURL := os.Getenv("OKTETO_CONTEXT")
 	oktetoThreshold := os.Getenv("OKTETO_THRESHOLD")
 	dryRun := os.Getenv("DRY_RUN") == "true"
 	ignoreSleeping := os.Getenv("IGNORE_SLEEPING_NAMESPACES") == "true"
@@ -29,6 +29,13 @@ func main() {
 		Level: logLevel,
 	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, opts))
+
+	if oktetoThreshold == "" {
+		oktetoThreshold = "24h"
+	}
+
+	logger.Info(fmt.Sprintf("Configuration set: OKTETO_CONTEXT=%s OKTETO_THRESHOLD=%s DRY_RUN=%t IGNORE_SLEEPING_NAMESPACES=%t RESTORE_ORIGINAL_NAMESPACE_STATUS=%t WAIT_FOR_DEPLOYMENT=%t",
+		oktetoURL, oktetoThreshold, dryRun, ignoreSleeping, restoreOriginalStatus, waitForDeploymentToFinish))
 
 	if token == "" || oktetoURL == "" {
 		logger.Error("OKTETO_TOKEN, OKTETO_URL environment variables are required")
@@ -43,10 +50,6 @@ func main() {
 	if err != nil {
 		logger.Error(fmt.Sprintf("Invalid OKTETO_URL %s", err))
 		os.Exit(1)
-	}
-
-	if oktetoThreshold == "" {
-		oktetoThreshold = "24h"
 	}
 
 	threshold, err := time.ParseDuration(oktetoThreshold)
@@ -67,7 +70,7 @@ func main() {
 		logger.Info(fmt.Sprintf("Processing namespace '%s'", ns.Name))
 
 		if ns.Status == model.Sleeping && ignoreSleeping {
-			logger.Error(fmt.Sprintf("Skipping namespace '%s' since its sleeping", ns.Name))
+			logger.Info(fmt.Sprintf("Skipping namespace '%s' since its sleeping", ns.Name))
 			logger.Info("-----------------------------------------------")
 			continue
 		}
